@@ -16,6 +16,9 @@ Repositório para cursos relacionados ao kafka feitos na plataforma Alura
     - bin/kafka-topics.sh --list --bootstrap-server localhost:9092 (lista os tópicos no servidor)
     - bin/kafka-topics.sh --alter --zookeeper localhost:2181 --topic ECOMMERCE_NEW_ORDER --partitions 3
          (Altera o número de partições de um tópico que já foi criado)
+    - bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic ECOMMERCE_NEW_ORDER --partitions 3 replication-factor 2
+         (Altera o fator de replicação do tópico para usar uma réplica do broker caso algum broker caia)
+         Obs.: Esse comando --alter não pode ser usado para alterar o fator de replicação, esse atributo só pode ser setado na criação dos tópicos.
 
      Comandos: Producer
     - bin/kafka-console-producer.sh --broker-list localhost:9092 --topic NOME_TOPICO (criar um producer no tópico indicado)
@@ -32,5 +35,10 @@ Repositório para cursos relacionados ao kafka feitos na plataforma Alura
 
 Qual a importância das chaves na paralelização de tarefas?
  - A chave é usada para distribuir a mensagem entre as partições existentes e consequentemente entre as instâncias de um serviço dentro de um consumer group.
+
+ *Properties*
+
+ ACKS_CONFIG: 0, 1 ou all
+  - propriedade que permite um pouco mais de reliability para as mensagens. Se configurado com "all", significa que vai escrever na replica/maquina/broker Leader e vai aguardar a escrita nas demais réplicas que estiverem in-sync. Essa configuração faz sentido setar com valor all sempre que tiver mais de um broker rodando.
     
 
