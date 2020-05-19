@@ -31,6 +31,10 @@ Repositório para cursos relacionados ao kafka feitos na plataforma Alura
     - bin/kafka-consumer-groups.sh --all-groups --bootstrap-server localhost:9092 --describe
          (exibe a situação de cada grupo de consumo)
 
+     Comandos: Consumer Groups
+    - kafka-consumer-groups --bootstrap-server localhost:9092 --group app --reset-offsets --execute --topic fifth_topic --shift-by -2 
+      (reseta o offset de consumo voltando 2)
+
 *Conceitos*
 
 Qual a importância das chaves na paralelização de tarefas?
