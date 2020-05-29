@@ -19,22 +19,22 @@ class KafkaService<T> implements Closeable {
     private final KafkaConsumer<String, Message<T>> consumer;
     private final ConsumerFunction parse;
 
-    public KafkaService(String groupId, String topic, ConsumerFunction<T> parse, Class<T> type, Map<String, String> properties) {
+    public KafkaService(String groupId, String topic, ConsumerFunction<T> parse, Map<String, String> properties) {
 
-        this(parse, groupId, type, properties);
+        this(parse, groupId, properties);
         consumer.subscribe(Collections.singletonList(topic)); //assina o topico
 
     }
 
-    public KafkaService(String groupId, Pattern topic, ConsumerFunction<T> parse, Class<T> type, Map<String, String> properties) {
+    public KafkaService(String groupId, Pattern topic, ConsumerFunction<T> parse, Map<String, String> properties) {
 
-        this(parse, groupId, type, properties);
+        this(parse, groupId, properties);
         consumer.subscribe(topic);
 
     }
 
-    private KafkaService(ConsumerFunction parse, String groupId, Class<T> type, Map<String, String> properties) {
-        this.consumer = new KafkaConsumer<>(getProperties(type,groupId,properties));
+    private KafkaService(ConsumerFunction<T> parse, String groupId, Map<String, String> properties) {
+        this.consumer = new KafkaConsumer<>(getProperties(groupId,properties));
         this.parse = parse;
     }
 
@@ -60,7 +60,7 @@ class KafkaService<T> implements Closeable {
 
     }
 
-    private Properties getProperties(Class<T> type, String groupId, Map<String, String> overrideProperties) {
+    private Properties getProperties(String groupId, Map<String, String> overrideProperties) {
         var properties = new Properties();
 
         properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
@@ -69,6 +69,7 @@ class KafkaService<T> implements Closeable {
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         properties.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1"); //offsetCommit de 1 em 1
         properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());
+        properties.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
         properties.putAll(overrideProperties);
 
         return properties;
