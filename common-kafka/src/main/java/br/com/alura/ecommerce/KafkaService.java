@@ -38,24 +38,30 @@ class KafkaService<T> implements Closeable {
         this.parse = parse;
     }
 
-    void run() {
+    void run() throws ExecutionException, InterruptedException {
 
-        while (true) {
-            var records = consumer.poll(Duration.ofMillis(100)); //Pergunta para o tópico se tem algum registro por 100 milisegundos
+        try(var deadLetter = new KafkaDispatcher<>()) {
 
-            if (!records.isEmpty()) {
-                System.out.println("Encontrei " + records.count() + " registros");
+            while (true) {
+                var records = consumer.poll(Duration.ofMillis(100)); //Pergunta para o tópico se tem algum registro por 100 milisegundos
 
-                for (var record : records) {
-                    try {
-                        parse.consume(record);
-                    } catch (Exception e) {
-                        // only catches Exception because no matter which Exception, I want to recover and parse the next one
-                        //so far, justing logging the exception for this message
-                        e.printStackTrace();
+                if (!records.isEmpty()) {
+                    System.out.println("Encontrei " + records.count() + " registros");
+
+                    for (var record : records) {
+                        try {
+                            parse.consume(record);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            var message = record.value();
+                            deadLetter.send("ECOMMERCE_DEADLETTER", message.getId().toString(),
+                                    message.getId().continueWith("DeadLetter"),
+                                    new GsonSerializer().serialize("", message));
+                        }
                     }
                 }
             }
+
         }
 
     }
