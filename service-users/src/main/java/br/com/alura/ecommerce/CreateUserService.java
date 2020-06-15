@@ -1,6 +1,6 @@
 package br.com.alura.ecommerce;
 
-import com.google.gson.internal.bind.SqlDateTypeAdapter;
+import br.com.alura.ecommerce.consumer.KafkaService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.sql.Connection;

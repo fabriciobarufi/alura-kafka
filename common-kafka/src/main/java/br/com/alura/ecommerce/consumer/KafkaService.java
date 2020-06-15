@@ -1,11 +1,13 @@
-package br.com.alura.ecommerce;
+package br.com.alura.ecommerce.consumer;
 
+import br.com.alura.ecommerce.Message;
+import br.com.alura.ecommerce.dispatcher.GsonSerializer;
+import br.com.alura.ecommerce.dispatcher.KafkaDispatcher;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
@@ -14,7 +16,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
-class KafkaService<T> implements Closeable {
+public class KafkaService<T> implements Closeable {
 
     private final KafkaConsumer<String, Message<T>> consumer;
     private final ConsumerFunction parse;
@@ -38,7 +40,7 @@ class KafkaService<T> implements Closeable {
         this.parse = parse;
     }
 
-    void run() throws ExecutionException, InterruptedException {
+    public void run() throws ExecutionException, InterruptedException {
 
         try(var deadLetter = new KafkaDispatcher<>()) {
 
